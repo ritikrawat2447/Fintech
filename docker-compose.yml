@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: fintech_pass
       POSTGRES_DB: fintech_db
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - fintech_postgres_data:/var/lib/postgresql/data
     healthcheck:
