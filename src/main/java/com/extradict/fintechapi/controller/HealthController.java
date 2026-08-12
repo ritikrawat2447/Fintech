@@ -17,9 +17,4 @@ public class HealthController {
             "service", "fintech-api"
         ));
     }
-
-    @GetMapping("/demo")
-    public ResponseEntity<String> demo() {
-        return ResponseEntity.ok("Fintech API is alive");
-    }
 }

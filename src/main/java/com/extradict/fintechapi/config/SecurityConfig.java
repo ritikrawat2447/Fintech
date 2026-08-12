@@ -1,5 +1,6 @@
 package com.extradict.fintechapi.config;
 
+import com.extradict.fintechapi.filter.RateLimitFilter;
 import com.extradict.fintechapi.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +19,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          RateLimitFilter rateLimitFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -31,11 +35,20 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
-                .requestMatchers("/actuator/**", "/api/health").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                    "/auth/register",
+                    "/auth/login").permitAll()
+                .requestMatchers(
+                    "/actuator/**",
+                    "/api/health").permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            // Rate limit runs FIRST — before JWT check
+            .addFilterBefore(rateLimitFilter,
+                UsernamePasswordAuthenticationFilter.class)
+            // JWT runs AFTER rate limit
+            .addFilterAfter(jwtAuthFilter, RateLimitFilter.class);
+
         return http.build();
     }
 
