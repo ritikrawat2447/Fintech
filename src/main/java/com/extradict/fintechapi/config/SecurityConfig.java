@@ -28,9 +28,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
@@ -43,11 +45,10 @@ public class SecurityConfig {
                     "/api/health").permitAll()
                 .anyRequest().authenticated()
             )
-            // Rate limit runs FIRST — before JWT check
             .addFilterBefore(rateLimitFilter,
                 UsernamePasswordAuthenticationFilter.class)
-            // JWT runs AFTER rate limit
-            .addFilterAfter(jwtAuthFilter, RateLimitFilter.class);
+            .addFilterBefore(jwtAuthFilter,
+                UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
