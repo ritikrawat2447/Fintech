@@ -15,25 +15,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(HealthController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class HealthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private JwtService jwtService;
-
-    @MockBean
-    private JwtAuthFilter jwtAuthFilter;
-
-    @MockBean
-    private RateLimitFilter rateLimitFilter;
-
-    @MockBean
-    private UserDetailsService userDetailsService;
-
     @Test
-    @WithMockUser
     void shouldReturnHealthOk() throws Exception {
         mockMvc.perform(get("/api/health"))
                 .andExpect(status().isOk())
