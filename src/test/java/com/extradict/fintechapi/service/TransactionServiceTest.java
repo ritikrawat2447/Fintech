@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.extradict.fintechapi.notification.TransactionNotificationPublisher;
+
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
 
@@ -45,6 +47,9 @@ class TransactionServiceTest {
 
     @InjectMocks
     private TransactionService transactionService;
+
+    @Mock
+    private TransactionNotificationPublisher notificationPublisher;
 
     private User user;
     private Account fromAccount;
