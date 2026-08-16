@@ -33,7 +33,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      port: ${REDIS_PORT:6380}
 
 server:
   port: 8080
@@ -56,4 +56,5 @@ management:
 logging:
   level:
     root: INFO
-    com.fintech: DEBUG
+    com.extradict.fintechapi: DEBUG
+    com.extradict.fintechapi.notification: DEBUG
