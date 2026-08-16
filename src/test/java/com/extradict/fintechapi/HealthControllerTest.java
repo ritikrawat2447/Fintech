@@ -1,31 +1,31 @@
 package com.extradict.fintechapi.controller;
 
-import com.extradict.fintechapi.filter.RateLimitFilter;
-import com.extradict.fintechapi.security.JwtAuthFilter;
-import com.extradict.fintechapi.security.JwtService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(HealthController.class)
-@AutoConfigureMockMvc(addFilters = false)
 class HealthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc = MockMvcBuilders
+            .standaloneSetup(new HealthController())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter())
+            .build();
 
     @Test
     void shouldReturnHealthOk() throws Exception {
         mockMvc.perform(get("/api/health"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(
-                        "application/json"));
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(content().json("""
+                    {
+                        "status": "ok",
+                        "service": "fintech-api"
+                    }
+                """));
     }
 }
